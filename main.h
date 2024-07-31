@@ -1,6 +1,8 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+#include <limits.h>
+#include <stdio.h>
 
 /**
  * struct flags - struct containing flags to "turn on"
