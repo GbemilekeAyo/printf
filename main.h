@@ -1,8 +1,8 @@
-#ifndef HOLBERTON_H
-#define HOLBERTON_H
+#ifndef MAIN_H
+#define MAIN_H
 
 #include <stdlib.h>
-#include <stdarg.h>
+#include <limits.h>
 
 /**
  * struct flags - struct containing flags to "turn on"
