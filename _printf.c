@@ -1,3 +1,10 @@
+#include "main.h"
+#include <stdarg.h>
+#include <unistd.h>
+#include <limits.h>
+
+
+
 /**
  * _printf - produces output according to a format
  * @format: format string containing the characters and the specifiers
