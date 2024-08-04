@@ -1,47 +1,78 @@
-#include "holberton.h"
+#include "main.h"
+
+int (*printer_aux(char flag))(va_list);
 
 /**
- * _printf - produces output according to a format
- * @format: format string containing the characters and the specifiers
- * Description: this function will call the get_print() function that will
- * determine which printing function to call depending on the conversion
- * specifiers contained into fmt
- * Return: length of the formatted output string
+ * _printf - produces output according to a format.
+ * @format: format specifier.
+ * Return: number of characters printed.
  */
 int _printf(const char *format, ...)
 {
-	int (*pfunc)(va_list, flags_t *);
-	const char *p;
-	va_list arguments;
-	flags_t flags = {0, 0, 0};
+	va_list arg;
+	int i, printed_chars = 0;
 
-	register int count = 0;
+	if (format == NULL || (format[0] == '%' && format[1] == '\0'))
+		return (-1);
 
-	va_start(arguments, format);
-	if (!format || (format[0] == '%' && !format[1]))
-		return (-1);
-	if (format[0] == '%' && format[1] == ' ' && !format[2])
-		return (-1);
-	for (p = format; *p; p++)
+	va_start(arg, format);
+	for (i = 0; format && format[i]; i++)
 	{
-		if (*p == '%')
+		if (format[i] != '%')
 		{
-			p++;
-			if (*p == '%')
-			{
-				count += _putchar('%');
-				continue;
-			}
-			while (get_flag(*p, &flags))
-				p++;
-			pfunc = get_print(*p);
-			count += (pfunc)
-				? pfunc(arguments, &flags)
-				: _printf("%%%c", *p);
-		} else
-			count += _putchar(*p);
+			_putchar(format[i]);
+			printed_chars++;
+		}
+		else if (format[i + 1] == '\0')
+			return (-1);
+		else if (format[i + 1] == '%')
+		{
+			_putchar(format[i]);
+			printed_chars++;
+			i++;
+		}
+		else if (printer_aux(format[i + 1]) != NULL)
+		{
+			printed_chars = printed_chars + printer_aux(format[i + 1])(arg);
+			i++;
+		}
+		else
+		{
+			_putchar(format[i]);
+			printed_chars++;
+		}
 	}
-	_putchar(-1);
-	va_end(arguments);
-	return (count);
+	va_end(arg);
+
+	return (printed_chars);
+}
+
+/**
+ * printer_aux - auxiliar function for print with a specific format.
+ * @flag: format specifier
+ * Return: pointer to format function or NULL.
+ */
+int (*printer_aux(char flag))(va_list)
+{
+	printer_t arr[] = {
+		{'c', print_c},
+		{'s', print_s},
+		{'i', print_i},
+		{'d', print_i},
+		{'b', print_b},
+		{'u', print_u},
+		{'o', print_o},
+		{'x', print_x},
+		{'X', print_X},
+		{'r', print_r},
+		{'R', print_R},
+		{'\0', NULL}
+	};
+	int i;
+
+	for (i = 0; arr[i].flag != '\0'; i++)
+		if (flag == arr[i].flag)
+			break;
+
+	return (arr[i].function);
 }
